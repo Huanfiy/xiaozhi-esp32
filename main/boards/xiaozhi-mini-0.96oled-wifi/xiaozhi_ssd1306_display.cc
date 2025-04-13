@@ -595,7 +595,7 @@ void XIAOZHI_Ssd1306Display::ChargingTimerCallback(void* arg) {
     display->OnStateChanged();  //检测当前对对话状态
     // 检查电池是否充满，adc值超过2430，判定为充满
     bool is_battery_full = 0;
-    if (display->average_adc > 2430 && gpio_get_level(display->charging_full_pin_) == 1) {
+    if (gpio_get_level(display->charging_full_pin_) == 1) {
         is_battery_full = 1;
     }
     if (is_charging) {
