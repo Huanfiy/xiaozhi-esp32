@@ -1,5 +1,5 @@
 #include "wifi_board.h"
-#include "audio_codecs/no_audio_codec.h"
+#include "audio_codecs/es8311_audio_codec.h"
 #include "xiaozhi_ssd1306_display.h"
 #include "system_reset.h"
 #include "application.h"
@@ -101,8 +101,19 @@ public:
     }
 
     virtual AudioCodec* GetAudioCodec() override {
-        static NoAudioCodecSimplex audio_codec(AUDIO_INPUT_SAMPLE_RATE, AUDIO_OUTPUT_SAMPLE_RATE,
-            AUDIO_I2S_SPK_GPIO_BCLK, AUDIO_I2S_SPK_GPIO_LRCK, AUDIO_I2S_SPK_GPIO_DOUT, AUDIO_I2S_MIC_GPIO_SCK, AUDIO_I2S_MIC_GPIO_WS, AUDIO_I2S_MIC_GPIO_DIN);
+        static Es8311AudioCodec audio_codec(display_i2c_bus_,          // 复用显示屏的I2C总线
+                                            (i2c_port_t)0,             // 使用与显示屏相同的I2C端口
+                                            AUDIO_INPUT_SAMPLE_RATE,   // 输入采样率
+                                            AUDIO_OUTPUT_SAMPLE_RATE,  // 输出采样率
+                                            AUDIO_I2S_MCLK_GPIO,       // MCLK引脚
+                                            AUDIO_I2S_SPK_GPIO_BCLK,   // BCLK引脚
+                                            AUDIO_I2S_SPK_GPIO_LRCK,   // WS/LRCK引脚
+                                            AUDIO_I2S_SPK_GPIO_DOUT,   // DOUT引脚
+                                            AUDIO_I2S_MIC_GPIO_DIN,    // DIN引脚
+                                            GPIO_NUM_38,               // 功放使能引脚设为GPIO_NUM_38
+                                            0x18<<1,                   // ES8311的I2C地址
+                                            true                       // 使用MCLK
+        );
         return &audio_codec;
     }
 
